@@ -1,0 +1,5 @@
+(duplicate):(res://resources/units/goblin_tribe_hob.tres);
+(texture):(mod://sprites/blue_goblin.png);
+(name):(Blue Goblin);
+([tags]):(mod://BlueTag.txt);
+([inventory][0]):(mod://BlueSparkItem.txt);

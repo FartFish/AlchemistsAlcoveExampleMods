@@ -1,0 +1,10 @@
+(class):(res://classes/item.gd);
+(name):(Blue Spark);
+(id):(blue_spark);
+(texture):(mod://sprites/blue_spark.png);
+([tags]):(res://resources/tags/item_tags/spell.tres);
+([tags]):(mod://BlueTag.txt);
+(range):(3);
+(num_uses):(3);
+([behaviors]):(mod://BlueSparkDealDamage.txt);
+(postname_description):(You wield the {power_of_Blue:blue}.)

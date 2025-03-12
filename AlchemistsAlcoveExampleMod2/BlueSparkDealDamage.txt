@@ -1,0 +1,4 @@
+(class):(res://classes/behaviors/spell_behaviors/simple_act_deal_damage.gd);
+([tags]):(mod://BlueTag.txt);
+(beam):(true);
+([dmg][0]):(5);

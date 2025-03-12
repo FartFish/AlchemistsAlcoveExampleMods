@@ -1,0 +1,257 @@
+Before you go through this, be sure to check out "_README.txt" -- it contains some useful information and an in-depth guide to mod-making for Alchemist's Alcove!
+
+
+
+
+
+CLASSES
+
+
+GameObject: "res://classes/game_object.gd"
+	The Base Class for all Game Objects, such as Units and Items.
+	Attributes:
+	- "name" <String> : "Object" -- The name of the Object.
+	- "id" <String> : "object"
+	- "postname_description" <String> : "" -- The description of an Object after its name.
+	- "texture" <Texture2D> : null -- The texture displayed at an Object's location in the game world.
+	- "displayed_texture" <Texture2D> : null -- The texture displayed as an Object's icon while it is hovered. If null, "texture" is displayed instead.
+	- "texture_frame_size" <int> : 16 -- The size of individual animation frames of an Object's texture.
+	- "tags" <Array[Tag]> : [] -- A list of the Tags used to describe an Object.
+	- "is_context" <bool> : false -- Whether or not the Object is a Context. This will determine whether the Object's Navigation Tags will be used for it or other Objects.
+	- "navigation_tags" <Array[Tag]> : [] -- The Tags that determine what Contexts an Object can occupy.
+
+Context: "res://classes/context.gd"
+Inherits GameObject
+	An Object that determines what Tiles other Objects can occupy. For example, floors allow Walking and Flying Units, while Walls allow Digging Units.
+	Attributes:
+	- All "GameObject" Attributes
+
+Door: "res://classes/door.gd"
+Inherits Context
+	A Context that allows the player to transition through rooms.
+	Attributes:
+	- All "Context" Attributes
+	- "next_room" <Vector3> : Vector3(0, 0, 0) -- Determines the direction of the next room. Currently setting Vector3s is not supported.
+
+DoorModular: "res://classes/door_modular.gd"
+Inherits Door
+	A Door that alters its Texture depending on the next room.
+	Attributes:
+	- All "Door" Attributes
+	- "textures" <Dictionary> : {"biome" : preload("res://sprites/contexts/door_cave.png") } -- Currently setting Dictionaries is not supported.
+
+Item: "res://classes/item.gd"
+Inherits GameObject
+	A Game Object with a set of behaviors intended to be used by other Objects.
+	Attributes:
+	- All "GameObject" Attributes
+	- "animation" <int> : 1 -- The Y-Coordinate of the animation the Item should set its caster to on cast. By default, this is the attack animation.
+	- "set_flip" <bool> : true -- Whether or not using an Item will cause its caster to face the casting direction.
+	- "alt_description" <String> : "" -- That's a secret ;)
+	- "behaviors" <Array[SpellBehavior]> : [] -- An array of SpellBehaviors that dictate how an Item behaves on cast.
+	- "can_cast_self" <bool> : true -- Whether or not an Item may be used on its caster.
+	- "range" <float> : -2 -- The range at which an Item can be used. -2 means the Item cannot be used, and -1 means it has inf range.
+	- "show_range" <bool> : true -- Whether or not to display an Item's range while it is selected by the player.
+	- "cast_on_hostile" : true -- Whether an Item is meant to be cast on hostile Units or allied Units.
+	- "num_uses" <int> : -1 -- How many uses an Item has before it disappears. -1 = inf uses.
+	- "display_num_uses" <bool> : true -- Whether or not to display how many uses an Item has.
+	- "can_trash" <bool> : false -- Set this to "true" to prevent an Item from being dropped by the player.
+
+Unit: "res://classes/unit.gd"
+Inherits GameObject
+	A Game Object intended to interact directly with the game world.
+	Attributes:
+	- All "GameObject" Attributes
+	- "team" <Team> : null -- Determines what Units to cast offensive and non-offensive Items on.
+	- "hp_max" <int> : 1 -- The max health points of a Unit.
+	- "resistances" <Array[Resistance]> : [] -- The set of Resistances that are used in calculating damage taken by a Unit.
+	- "forced_summon_color" <Color> : #000000 -- Overrides color of Unit name where referenced in Item descriptions.
+	- "inventory" <Array[Item]> : [] -- The set of Items a Unit has access to.
+	- "drops" <Array[DropChance]> : [] -- A set of DropChances that determines what Items a Unit can drop and how often they are dropped.
+	- "attach_item_descriptions" <bool> : true -- Whether or not to include the descriptions of a Unit's item when its description is expanded.
+
+
+
+Team: "res://classes/team.gd"
+	Used to guide Unit Behaviors.
+	Attributes:
+	- "team_name" <String> : "" -- The ID used by the game to refer to the Team.
+	- "displayed_name" <String> : "" -- The name displayed by the game when referring to the Team.
+	- "color" <Color> : #000000 -- The Color used when displaying the Team.
+	- "allied_teams" <Array[String]> : [] -- Array of Team IDs used to dictate what Units are considered allies.
+	- "enemy_teams" <Array[String]> : [] -- Array of Team IDs used to dictate what Units are considered hostile.
+
+DropChance: "res://classes/drop_chance.gd"
+	Used to determine what GameObjects are dropped by a Unit upon its death and how often.
+	Attributes:
+	- "object" <GameObject> : null -- What GameObject is dropped by a DropChance.
+	- "layer" <String> : "item" -- What Layer a DropChance drops a GameObject on.
+	- "chance" <float> : 50.0 -- The percent chance of a DropChance's GameObject dropping.
+
+
+
+Tag: "res://classes/tag.gd"
+	Used to describe GameObjects, damage, and more.
+	- "name" <String> : "Tag" -- The displayed name of the Tag.
+	- "id" <String> : "tag" -- The ID used by the game to refer to the Tag.
+	- "color" <Color> : #000000 -- The Color used to display the Tag.
+
+Resistance: "res://classes/resistance.gd"
+	Used in calculating damage taken by a Unit.
+	Attributes:
+	- "tag" <Tag> : null -- What Tag the Resistance impacts.
+	- "mod" <int> : 100 -- What percent of damage the Resistance negates. Set to a negative number to deal more damage. Set to a number >100 to heal owner Unit.
+
+
+
+ObjectSpawner: "res://classes/ObjectSpawner.gd"
+	Used by the game to determine what GameObjects are spawned in what rooms.
+	- "objects" <Array[GameObject]> : [] -- What GameObjects can be spawned by an ObjectSpawner (spawns are randomly chosen from the array).
+	- "layer" <String> : "unit" -- What layer GameObjects are spawned on by an ObjectSpawner.
+	- "team" <Team> : null -- Sets the Team of a GameObject if possible.
+	- "x" <int> : 0 -- The X-Coordinate of an ObjectSpawner's center.
+	- "Y" <int> : 0 -- The Y-Coordinate of an ObjectSpawner's center.
+	- "radius" <float> : 1.0 -- How far GameObjects can be spawned from an ObjectSpawner's center.
+	- "strength" <float> : 1.0 -- How many GameObjects (rounded down) are spawned within the radius.
+	- "delta" <float> : -1.0 -- Modifies strength based on distance to the center.
+	- "rand_min" <float> : 0.0 -- Minimum random number to modify number of spawns by.
+	- "rand_max" <float> : 0.0 -- Maximum random number to modify number of spawns by.
+
+
+
+Behavior: "res://classes/behavior.gd"
+	The Base Class for Unit Behaviors. Will return no action.
+	Has no attributes.
+
+DefaultUnitBehavior: "res://classes/unit_behaviors/default_unit_behavior.gd"
+Inherits Behavior
+	The Default Behavior for Units. Will prompt Units to move towards enemy Units and attack when in range.
+	Attributes:
+	- All "Behavior" Attributes
+	- "stationary" <bool> : false -- Determines whether or not the Unit can move.
+
+
+
+SpellBehavior: "res://classes/spell_behavior.gd"
+	The Base Class for Item Behaviors. Will return no action.
+	Attributes:
+	- "display" <bool> : true -- Whether or not a Spell Behavior will be displayed in its Item's description.
+	- "sounds" <Array[String]> : [] -- The IDs of sounds to play on cast.
+
+SpellBehaviorSimpleMove: "res://classes/behaviors/spell_behaviors/simple_act_move.gd"
+Inherits SpellBehavior
+	Moves caster to target Tile.
+	Attributes:
+	- All "SpellBehavior" Attributes
+	- "speed" <int> : 1 -- How many Tiles a Unit can move at once, if movement is not instant.
+	- "instant" <bool> : false -- Whether a Unit should be instantly transported to target Tile.
+	- "force_move" <bool> : false -- Whether a Unit may use the Behavior to swap tiles with another Unit.
+	- "cast_on_prev" <Array[SpellBehavior]> -- A list of SpellBehaviors to be cast on the previous tile.
+
+SpellBehaviorSimpleGiveItem: "res://classes/behaviors/spell_behaviors/simple_give_item.gd"
+Inherits SpellBehavior
+	Gives caster Items on cast.
+	Attributes:
+	- All "SpellBehavior" Attributes
+	- "items" <Array[String]> : [] -- A list of Item IDs to give to the player on cast.
+
+SpellBehaviorGetComplexPoints: "res://classes/behaviors/spell_behaviors/spell_behavior_complex_points.gd"
+Inherits SpellBehavior
+	May interact with a set of points determined by various parameters.
+	Attributes:
+	- All "SpellBehavior" Attributes
+	- "beam" <bool> : false -- Whether the Behavior should interact with points along a path to the target Tile.
+	- "cone_angle" <int> : 0 -- Allows Behaviors to interact with tiles within a cone of a number of degrees.
+	- "include_origin" <bool> : false -- Whether or not the origin Tile should be included in the interacted Tiles.
+	- "radius" <float> : 1.0 -- Determines the radius around the target Tile that other Tiles should be interacted with by a Behavior.
+	- "perpendicular_line_length" <int> : 0 -- Includes Tiles along a line of length perpendicular to the origin Tile.
+
+SpellBehaviorSimpleDealDamage: "res://classes/behaviors/spell_behaviors/simple_act_deal_damage.gd"
+Inherits SpellBehaviorGetComplexPoints
+	Deals typed damage on interacted Tiles.
+	Attributes:
+	- All "SpellBehaviorGetComplexPoints" Attributes
+	- "dmg" <Array[int]> : [1] -- Damage dealt on each interacted tile. May have different values for different Tags.
+	- "tags" <Array[Tag]> : [] -- The types of damage a Behavior will deal on points it interacts with.
+	- "forced_texture" <Texture2D> : null -- Overrides the texture of the damage display.
+	- "draw_path" <bool> : false -- Determines whether or not to harmlessly display the path of Tiles towards target.
+
+SpellBehaviorSimpleActSummon: "res://classes/behaviors/spell_behaviors/simple_act_summon.gd"
+Inherits SpellBehaviorGetComplexPoints
+	Summons Units on interacted Tiles.
+	Attributes:
+	- All "SpellBehaviorGetComplexPoints" Attributes
+	- "summons" <Array[GameObject]> : [] -- Array of GameObjects to spawn. Can be used for non-Units.
+	- "num_summons" <Array[int]> : [1] -- Number of Units to summon per tile interacted. May have different values for different Units.
+	- "layer" <String> : "unit" -- What layer to spawn GameObjects in.
+	- "summon_all" <bool> "false" -- Determines whether Behavior will iterate through "summons" array per interacted Tile, or summon all units in array on each interacted Tile.
+
+SpellBehaviorSimpleGrab: "res://classes/behaviors/spell_behaviors/simple_act_grab.gd"
+Inherits SpellBehaviorGetComplexPoints
+	Grabs Items on interacted Tiles.
+	Attributes:
+	- All "SpellBehaviorGetComplexPoints" Attributes
+	- "grab_caster_tile" <bool> : false -- Whether or not to grab Item on caster's Tile as well as target Tile.
+
+SpellBehaviorChangeObjSprite: "res://classes/behaviors/spell_behaviors/change_obj_sprite.gd"
+Inherits SpellBehaviorGetComplexPoints
+	Changes a GameObject's sprite to a predetermined texture.
+	Attributes:
+	- All "SpellBehaviorGetComplexPoints" Attributes
+	- "new_texture" <Texture2D> : null -- What texture to replace GameObject's texture with.
+	- "layer" <String> : "unit" -- What layer to choose GameObject from.
+
+
+
+
+IMPORTANT FILES
+
+
+
+	Tags
+
+		Damage Types
+		- Burning: "res://resources/tags/dmg_types/burning.tres"
+		- Freezing: "res://resources/tags/dmg_types/freezing.tres"
+		- Healing: "res://resources/tags/dmg_types/healing.tres"
+		- Necrotic: "res://resources/tags/dmg_types/necrotic.tres"
+		- Piercing: "res://resources/tags/dmg_types/piercing.tres"
+		- Poison: "res://resources/tags/dmg_types/poison.tres"
+		- Psychic: "res://resources/tags/dmg_types/psychic.tres"
+		- Shocking: "res://resources/tags/dmg_types/shocking.tres"
+		- Smashing: "res://resources/tags/dmg_types/smashing.tres"
+
+		Informational
+		- Health: "res://resources/tags/informational/health.tres"
+		- Radius: "res://resources/tags/informational/radius.tres"
+		- Self-Cast: "res://resources/tags/informational/self_cast.tres"
+
+		Item Tags
+		- Alchemy: "res://resources/tags/item_tags/crafting.tres"
+		- Food: "res://resources/tags/item_tags/food.tres"
+		- Philosophical Compound: "res://resources/tags/item_tags/philosopher.tres"
+		- Magic: "res://resources/tags/item_tags/spell.tres"
+		- Tool: "res://resources/tags/item_tags/tool.tres"
+		- Weapon: "res://resources/tags/item_tags/weapon.tres"
+
+		Navigation Tags
+		- Digging: "res://resources/tags/navigation_tags/digging.tres"
+		- Flying: "res://resources/tags/navigation_tags/flying.tres"
+		- Swimming: "res://resources/tags/navigation_tags/swimming.tres"
+		- Walking: "res://resources/tags/navigation_tags/walking.tres"
+
+		Unit Types
+		- Beast: "res://resources/tags/unit_types/beast.tres"
+		- Construct: "res://resources/tags/unit_types/construct.tres"
+		- Draconic: "res://resources/tags/unit_types/draconic.tres"
+		- Living: "res://resources/tags/unit_types/living.tres"
+		- Undead: "res://resources/tags/unit_types/undead.tres"
+
+
+	Teams
+
+		- Hobbthorn Tribe : TEAM_GOBLIN_HOB : "res://resources/teams/team_goblin_hob.tres"
+		- Aldrnari Clan : TEAM_KOBOLD_ALDRNARI : "res://resources/teams/team_kobold_aldrnari.tres"
+		- Friend of the Alchemist : TEAM_PLAYER : "res://resources/teams/team_player.tres"
+		- Risen of Aheawan : TEAM_RISEN : "res://resources/teams/team_risen.tres"
+		- Wild : TEAM_WILD : "res://resources/teams/team_wild.tres"

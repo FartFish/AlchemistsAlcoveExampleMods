@@ -1,0 +1,11 @@
+(class):(res://classes/ObjectSpawner.gd);
+([objects]):(blue_kobold);
+(team):(res://resources/teams/team_kobold_aldrnari.tres);
+(layer):(unit);
+(x):(13);
+(y):(6);
+(strength):(3);
+(radius):(10);
+(delta):(-0.2);
+(rand_min):(-1);
+(rand_max):(1);

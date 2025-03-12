@@ -1,0 +1,6 @@
+(class):(res://classes/behaviors/spell_behaviors/simple_act_deal_damage.gd);
+([tags]):(res://resources/tags/dmg_types/burning.tres);
+(draw_path):(true);
+([dmg][0]):(2);
+(radius):(2);
+(forced_texture):(mod://sprites/dmg_blue_burning.png);

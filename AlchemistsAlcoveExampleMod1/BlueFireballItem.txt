@@ -1,0 +1,8 @@
+(class):(res://classes/item.gd);
+(name):(Blue Fireball);
+(id):(blue_fireball);
+(texture):(mod://sprites/blue_fireball_icon.png);
+([tags]):(res://resources/tags/item_tags/spell.tres);
+(range):(4.5);
+(num_uses):(3);
+([behaviors]):(mod://BlueFireballDealDamage.txt);

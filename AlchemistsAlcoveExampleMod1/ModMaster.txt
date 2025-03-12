@@ -1,0 +1,2 @@
+mod://BlueKobold.txt
+mod://BlueKoboldSpawner.txt

@@ -1,0 +1,13 @@
+(class):(res://classes/unit.gd);
+(name):(Blue Kobold);
+(id):(blue_kobold);
+(texture):(mod://sprites/blue_kobold.png);
+(hp_max):(4);
+([tags]):(res://resources/tags/unit_types/draconic.tres);
+([tags]):(res://resources/tags/unit_types/beast.tres);
+([tags]):(res://resources/tags/unit_types/living.tres);
+([navigation_tags]):(res://resources/tags/navigation_tags/walking.tres);
+([inventory]):(mod://BlueFireballItem.txt);
+([inventory]):(res://resources/enemy_items/dagger_goblin.tres);
+(behavior):(res://classes/behaviors/unit_behaviors/default_unit_behavior.gd);
+(cast_delay):(1);

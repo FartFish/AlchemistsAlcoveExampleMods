@@ -1,0 +1,4 @@
+(class):(res://classes/tag.gd);
+(name):(Blue);
+(id):(blue);
+(color):(#5677fc);
